@@ -1,0 +1,120 @@
+{  
+	"languages": ["de", "en"],
+	"variants": ["a"],
+	"menus": {
+		"n1": {
+			"a": {
+				"default": "aufgaben",
+				"names": ["aufgaben", "bearbeiter", "contacts", "settings"],
+				"items": {
+					"contacts": {
+						"label": { 
+							"de": "Kontakte",
+							"en": "Contacts"
+						},
+						"target": { 
+							"file": "Kontakte",
+							"window": { "name": "Kontakte" },
+							"view": "restore" 
+						},
+						"default": "list",
+						"names": ["list", "detail"],
+						"items": {
+							"list": {
+								"label": { 
+									"de": "Liste",
+									"en": "List"
+								},
+								"target": {
+									"file": "Kontakte",
+									"layout": "Kontaktliste"
+								}
+							},
+							"detail": {
+								"label": { 
+									"de": "Detail",
+									"en": "Detail"
+								},
+								"target": {
+									"layout": "Kontaktdetails"
+								}
+							}
+						}
+					},
+					"aufgaben": {
+						"label": { 
+							"de": "Aufgaben",
+							"en": "Tasks"
+						},
+						"target": { 
+							"file": "Aufgaben",
+							"view": "restore" 
+						},
+						"names": ["list", "detail"],
+						"items": {
+							"list": {
+								"label": { 
+									"de": "Liste",
+									"en": "List"
+								},
+								"target": {
+									"layout": "Aufgabenliste"
+								}
+							},
+							"detail": {
+								"label": { 
+									"de": "Detail",
+									"en": "Detail"
+								},
+								"target": {
+									"layout": "Aufgabendetails"
+								}
+							}
+						}
+					},
+					"bearbeiter": {
+						"label": { 
+							"de": "Bearbeiter",
+							"en": "Assignees"
+						},
+						"target": { 
+							"file": "Aufgaben",
+							"view": "restore" 
+						},
+						"names": ["list", "detail"],
+						"items": {
+							"list": {
+								"label": { 
+									"de": "Liste",
+									"en": "List"
+								},
+								"target": {
+									"layout": "Bearbeiterliste"
+								}
+							},
+							"detail": {
+								"label": { 
+									"de": "Detail",
+									"en": "Detail"
+								},
+								"target": {
+									"layout": "Bearbeiterdetails"
+								}
+							}
+						}
+					},
+					"settings": {
+						"label": { 
+							"de": "Einstellungen",
+							"en": "Settings"
+						},
+						"target": { 
+							"file": "Aufgaben",
+							"layout": "Global" 
+						}
+					}
+				}
+			}
+		}
+	}
+}
