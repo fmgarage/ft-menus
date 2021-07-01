@@ -1,0 +1,996 @@
+/*	FTMenus.get( _menu; _item; _key )
+	@about universal function to get data from the menu configuration
+	@author Nils <nils.waldherr@fmgarage.com>
+	@copyright ©2021 FMGARAGE
+	@license https://opensource.org/licenses/mit MIT
+	@version 1.0.0-100 - 23.06.2021 – NW
+	@param string _menu = ""
+		--set-variant
+		--copy-window
+		--window-delete
+		--cache-disable
+		--cache-enable
+		
+	@param int _item
+	@param string _key = label -- highlight, target
+		?highlight -- return bool if button is highligted
+		status -- 0, 1, 2 as inactive, active, highlighted
+		submit -- click on button, 
+		info -- get a tooltip for a menu item
+		
+	@param (bool) $$FTMenus.get.no_cache -- results are neither read from nor written to cache
+	@return mixed result
+	
+*/
+
+// console log
+// _Log.insert( ""; ""; 1; "get( " & _menu & " ; " & _item & " ; " & _key & " ) [#c]" ) &
+
+
+Falls(
+
+
+	/*	functions
+	    ----------------------------------------------------------------------------------
+	    @todo sort function by usage and performance impact
+	*/
+	ZeichenLinks( _menu; 2 ) = "--"; Falls(
+	
+	
+		/*	get language 
+			----------------------------------------------------------------
+			@param string _item as language = ""
+			@return string language
+		*/
+		_menu = "--language-get";
+		SetzeVar(
+			[
+				// supported languages
+				languages = JSONListValues( $$FTMenus.config; "languages" );
+				cache_default = JSONGetElement( $$FTMenus.cache; "language" );
+				current_window = JSONGetElement( 
+					$$FTMenus.cache; 
+					"windows." 
+					& FilterZeichen( 
+						Kleinbuchstaben( Hole( Fenstername )); 
+						"abcdefghijklmnopqrstuvwxyz1234567890_.~" 
+					)
+					& ".language"
+				);						
+			
+				// set language
+				language = Falls(
+
+					// from parameter
+					NICHT IstLeer( _item ); HoleWert( FilterElemente( _item; languages ); 1 );
+					
+					// from window
+					NICHT IstLeer( current_window ); current_window;
+
+					// from cache
+					NICHT IstLeer( cache_default ); cache_default;
+			
+					// from filemaker pro
+					HoleWert( 
+						FilterElemente( 
+							Austauschen( Hole ( ProgrammSprache );
+								["English"; "en"]; ["French"; "fr"]; ["Italian"; "it"];
+								["German"; "de"]; ["Swedish"; "se"]; ["Spanish"; "es"];
+								["Dutch"; "nl"]; ["Japanese"; "jp"]; ["Simplified Chinese"; "cn"];
+								["Brazilian Portuguese"; "br"]; ["Korean"; "kr"]
+							);
+							languages
+						); 
+						1 
+					)
+				);
+			
+				// if empty get default from config
+				language = Falls( 
+					NICHT IstLeer( language ); language;
+
+					// get first defined language as default
+					JSONGetElement( $$FTMenus.config; "languages[0]" )
+				);
+				x=1
+			];
+			// save to cache
+			Falls(
+				IstLeer( cache_default );
+				SetzeVar( 
+					$$FTMenus.cache = JSONSetElement( 
+						$$FTMenus.cache; 
+						"language"; 
+						language; 
+						JSONString 
+					);
+					""
+				)
+			)
+				
+			// return language
+			& language
+// & _Log.insert( ""; ""; ""; "return '" & language & "'" )
+		);
+		
+		
+		/*	set language 
+			----------------------------------------------------------------
+			@param string _item as language = (default)
+			@param int _key = 0 as mode current window, 1: default, 2: reload all windows
+			@return string language
+			
+			@todo set in window, delete/reset label, info in window
+			
+			find keys 'label'
+			find keys 'info'
+			
+			@todo json findKey()
+			@todo schleife mit delete
+		*/
+		_menu = "--language-set";
+		SetzeVar(
+			[
+				// set current language from _item, window, default, filemaker
+				language = FTMenus.get( "--language-get"; _item; "" );
+				
+				// current window path
+				current_window_path = "windows." 
+				& FilterZeichen( 
+					Kleinbuchstaben( Hole( Fenstername )); 
+					"abcdefghijklmnopqrstuvwxyz1234567890_.~" 
+				);
+				
+				// set language in cache
+				$$FTMenus.cache = JSONSetElement( 
+					$$FTMenus.cache;
+					
+					Falls( 
+						// set in cache
+						_key >= 1; 
+						"language";
+						
+						// set in current window
+						current_window_path & ".language"
+					);
+					language;
+					JSONString
+				);
+				
+				// json to scan for labels, infos
+				json_to_scan = Falls(
+				
+					// in all windows	
+					_key = 2; $$FTMenus.cache;
+				
+					// only in current window
+					JSONGetElement( $$FTMenus.cache; current_window_path )
+				);
+
+				// list nodes to delete				
+				modes_to_delete = Liste(
+					SCoreJson.findKey( json_to_scan; "label"; "" );
+					SCoreJson.findKey( json_to_scan; "info"; "" )
+				);
+// $$modes_to_delete=modes_to_delete;				
+				
+				x=1
+			];
+			Solange(
+				[
+					count = ElementeAnzahl( modes_to_delete );
+					i=1
+				];
+				i<=count;
+				[
+					path = Falls( _key+0=0; current_window_path & "." )
+						& HoleWert( modes_to_delete; i );
+					$$FTMenus.cache = JSONDeleteElement( 
+						$$FTMenus.cache;
+						path
+					);
+					i=i+1
+				];
+				""
+			)
+			& language
+		);
+		
+		
+		/*	load config 
+			----------------------------------------------------------------
+			@param string _item as config
+			@param string _key as variant
+			@return config json
+		*/
+		_menu = "--load-config";
+		SetzeVar(
+			[
+				$$FTMenus.config = _item;
+				$$FTMenus.cache = "{}";
+// 				$$FTMenus.cache = JSONSetElement( 
+// 					""; 
+// 					["variant"; Falls( NICHT IstLeer( _key ); _key; "default" ); JSONString ]
+// 				);
+//				r = FTMenus.get( "--language-set"; ""; ""; );
+				x=1
+			];
+			$$FTMenus.config
+		);
+		
+			
+		/*	get variant 
+			----------------------------------------------------------------
+			@param string _item as variant = ""
+			@return string language
+		*/
+		_menu = "--variant-get";
+		SetzeVar(
+			[
+				// supported languages
+				variants = JSONListValues( $$FTMenus.config; "variants" );
+				variants = Falls(
+					NICHT IstLeer( variants ); variants;
+					
+					// if empty get first variant of first menu
+					SetzeVar(
+						first_menu = HoleWert( JSONListKeys( $$FTMenus.config; "menus" ); 1 );
+						HoleWert( JSONListKeys( $$FTMenus.config; "menus." & first_menu ); 1 )
+					)
+				);
+					
+				cache_default = JSONGetElement( $$FTMenus.cache; "variant" );
+			
+				// set variant
+				variant = Falls(
+
+					// from parameter
+					NICHT IstLeer( _key ); HoleWert( FilterElemente( _key; variants ); 1 );
+
+					// from cache
+					NICHT IstLeer( cache_default ); cache_default
+			
+				);
+			
+				// if empty get default from config
+				variant = Falls( 
+					NICHT IstLeer( variant ); variant;
+
+					HoleWert( variants; 1 )
+				);
+				x=1
+			];
+			// save to cache
+			Falls(
+				IstLeer( cache_default );
+				SetzeVar( 
+					$$FTMenus.cache = JSONSetElement( 
+						$$FTMenus.cache; 
+						"variant"; 
+						variant; 
+						JSONString 
+					);
+					""
+				)
+			)
+				
+			// return variant
+			& variant
+// & _Log.insert( ""; ""; ""; "return '" & variant & "'" )
+		);
+		
+		
+		/*	set variant 
+			------------------------------------------------------------------------------
+			@about change the variant for the current window, default or reload all
+			@param _item as variant name
+			@param _key = 0 as mode current window, 1: default, 2: reload all
+			@return true
+		
+			@todo check for valid variant name
+			@todo check for variant is current
+		*/
+		_menu = "--variant-set";
+		Falls(
+			// precondition: variant is current
+			JSONGetElement( $$FTMenus.cache; "windows." & Hole( Fenstername ) & ".variant" ) = _item;
+			"";
+		
+			// precondition: unknown value
+			IstLeer( FilterElemente( JSONListValues( $$FTMenus.config; "variants" ); _item ));
+			"ERROR: '" & _item & "' is not a valid variant";
+		
+			SetzeVar(
+				[
+					path = "windows." & Hole( Fenstername ) & ".";
+					$$FTMenus.cache = JSONSetElement( $$FTMenus.cache; path & "variant"; _item; JSONString );
+					$$FTMenus.cache = JSONDeleteElement( $$FTMenus.cache; path & "menus" );
+					$$FTMenus.cache = JSONDeleteElement( $$FTMenus.cache; path & "stateLog" );
+					x=1
+				];
+				""
+			)
+		);
+	
+	
+		/*	return version
+			----------------------------------------------------------------
+		*/
+		_menu = "--version" ODER $_Db.inVersionMode; 1000000;
+
+		
+		/*	delete window from cache
+			----------------------------------------------------------------
+			@about deletes window state, should be called by onWindowClose trigger
+			@return true
+			
+			@todo reset window globals
+			@todo delete only if one window by the current's name
+		*/
+		_menu = "--window-delete";
+		SetzeVar(
+			$$FTMenus.cache = JSONDeleteElement( 
+				$$FTMenus.cache; 
+				"windows." & FilterZeichen( 
+					Kleinbuchstaben( Hole( Fenstername )); 
+					"abcdefghijklmnopqrstuvwxyz1234567890_.~" 
+				)
+			);
+			""
+		);
+	
+	
+		/*	duplicate window
+			----------------------------------------------------------------
+			@about if an additional window is opened it will be created as a copy
+			@param _item as source name
+			@param _key = (current) as target name
+			@return true
+		*/
+		_menu = "--window-duplicate";
+		Falls(
+			// preconditions
+			IstLeer( _item ); "";
+			
+			// duplicate window
+			SetzeVar(
+				[
+					// target window path
+					current_path = "windows." & FilterZeichen( 
+						Kleinbuchstaben( _item );
+						"abcdefghijklmnopqrstuvwxyz1234567890_.~" 
+					);
+				
+					// current window path
+					target_path = "windows." & FilterZeichen( 
+						Kleinbuchstaben( 
+							Falls( 
+								NICHT IstLeer( _key ); _key;  
+								Hole( Fenstername )
+							)
+						); 
+						"abcdefghijklmnopqrstuvwxyz1234567890_.~" 
+					);
+				
+					// set cache
+					$$FTMenus.cache = JSONSetElement( 
+						$$FTMenus.cache;
+						target_path;
+						JSONGetElement( 
+							$$FTMenus.cache; 
+							current_path
+						);
+						JSONObject
+					)
+				];
+				Wahr
+			)
+		);
+	
+	
+		/*	get window global
+			----------------------------------------------------------------
+			@about set a global variable in the window context
+			@param _item as name
+			@param _key as value
+			@return value
+		*/
+		_menu = "--window-global-get";
+		"";
+		
+		
+		/*	set window global
+			----------------------------------------------------------------
+			@about set a global variable in the window context
+			@param _item as name
+			@param _key as value
+			@return true
+		*/
+		_menu = "--window-global-set";
+		Wahr;
+		
+		
+		/*	history back
+			----------------------------------------------------------------
+			@about 
+			@return json target object
+		*/
+		_menu = "--history-back";
+		"";
+		
+		
+		/*	disable cache
+			----------------------------------------------------------------
+			@about sets a global variable so all values are read from config
+			@return true
+		*/
+		_menu = "--cache-disable";
+		SetzeVar(
+			$$FTMenus.get.disable_cache = Wahr;
+			Wahr
+		);
+
+
+		/*	enable cache
+			----------------------------------------------------------------
+			@about re-enable cache by resetting global var
+			@return true
+		*/
+		_menu = "--cache-enable";
+		SetzeVar(
+			$$FTMenus.get.disable_cache = "";
+			Wahr
+		);
+
+
+		/*	toggle cache
+			----------------------------------------------------------------
+			@about re-enable cache by resetting global var
+			@return true
+		*/
+		_menu = "--cache-toggle";
+		FTMenus.get( 
+			Falls( $$FTMenus.get.disable_cache; "--cache-enable"; "--cache-disable" );			
+			""; 
+			"" 
+		);
+
+
+		/*	set state 
+			----------------------------------------------------------------
+			
+			@todo state log 
+		*/
+		_menu = "--set-state";
+		"";
+		
+		
+		/*	set current 
+			----------------------------------------------------------------
+			@param string _item
+			@param int _key as menu
+		*/
+		_menu = "--set-current";
+		SetzeVar(
+			[
+				// set window name, remove unsupported chars
+				window = FilterZeichen( 
+					Kleinbuchstaben( Hole( Fenstername )); 
+					"abcdefghijklmnopqrstuvwxyz1234567890_.~"
+				);
+
+				// set cachepath
+				cachepath = "windows." & window & ".menus." & _key & ".isCurrent";
+			
+				// set cache
+				$$FTMenus.cache = JSONSetElement( 
+					$$FTMenus.cache; 
+					cachepath; 
+					_item; 
+					JSONNumber 
+				)
+			];
+			Wahr
+		);
+		
+		
+		
+		
+
+		/*	error unknown function
+			----------------------------------------------------------------
+		*/
+		"ERROR: unknown function '" & _menu & "'"
+	);
+
+
+
+
+
+	/*	preconditions
+	    ----------------------------------------------------------------------------------
+	*/
+	
+	// _item > count	
+	NICHT IstLeer( _item ) UND FTMenus.get( _menu; ""; "count" ) < _item; "";
+
+
+
+
+
+	/*	main
+	    ----------------------------------------------------------------------------------
+	*/
+	SetzeVar(
+		[
+			/*	compose cachepath
+				--------------------------------------------------------------------------
+				--------------------------------------------------------------------------
+				--------------------------------------------------------------------------
+	 			@todo cache in $FTMenus.get.cachepath
+			*/
+
+			// set window name, remove unsupported chars
+			window = FilterZeichen( 
+				Kleinbuchstaben( Hole( Fenstername )); 
+				"abcdefghijklmnopqrstuvwxyz1234567890_.~"
+			);
+
+			// set cachepath1
+			cachepath1 = "windows." & window;
+
+			// set menu for cachepath
+			menu = Falls(
+			
+				// deprecated values @todo remove
+				_menu = "h1"; "n1";
+				
+				// n1.$current workaround @todo
+				_menu = "n1.$current";
+				"n1.items[" & FTMenus.get( "n1"; ""; "isCurrent" ) & "]";
+				
+				
+				// menu is using $ references
+				Falsch; // Position( _menu; "$"; 1; 1 );
+				Solange(
+					[
+						list = Austauschen( _menu; "."; ¶ );
+						count = ElementeAnzahl( list );
+						menu = "";
+						i=1
+					];
+					i<=count;
+					[
+						item = HoleWert( list; i );
+						item = Falls( 
+
+							// $current
+							item = "$current";
+							"items[" & FTMenus.get( menu; ""; "isCurrent" ) & "]";
+							
+							// else as is
+							item
+						);
+						menu = menu & Falls( i>1; "." ) & item;
+						i=i+1
+					];
+					menu // Austauschen( menu; ¶; "." )
+				);
+				
+				// unchanged
+				_menu
+			);
+			
+			
+			
+			// rewrite deprecated keys
+/*			_key = FAlls(
+				_key = "submit"; "target";
+				_key = "highlighted"; "isCurrent";
+				_key = "inactive"; "ignore";
+				_key
+			);
+*/			
+						
+			// resolve item name from index
+			item_is_index = Exakt( _item; _item+0 );
+			item_is_string = NICHT item_is_index UND NICHT IstLeer( _item );
+			
+
+			// set cachepath2
+			// windows.(window).menus.(menu)
+			cachepath2 = cachepath1
+			& Falls( 
+			
+				// add menu
+				NICHT IstLeer( menu );
+				".menus." & menu
+				
+				// add item if string
+//				& Falls( item_is_string; "." & _item )
+				
+			);
+			
+			// set key
+			// windows.(window).menus.(menu).label
+			cachepath3 = cachepath2
+			& Falls(
+				NICHT IstLeer( _key );
+				"." & _key
+			)
+			
+			
+			
+			// add item if isint and isset
+			// windows.(window).menus.(menu).language
+			& Falls( 
+				// isCurrent
+				_key = "isCurrent"; "";
+				
+				// add index
+				item_is_index; "[" & _item-1 & "]"
+			);
+
+
+			
+
+
+
+			/*	get value from cache
+				--------------------------------------------------------------------------
+			*/
+			// set value from cache
+			value = Falls(
+				NICHT IstLeer( $$FTMenus.cache );
+				JSONGetElement( $$FTMenus.cache; cachepath3 )
+			);
+			
+// r = _Log.insert( ""; ""; ""; "cachepath3: '" & cachepath3 & "' returned: '" &  value & "'");
+
+			value = Falls(
+			
+				// error
+				ZeichenLinks( value; 1 ) = "?"; 
+				"ERROR: invalid cache path '" & cachepath3 & "'";
+				
+				// ignore
+				_key = "ignore"; "";
+				
+				// isCurrent
+				_key = "isCurrent" UND NICHT IstLeer( _item ); value = _item-1;
+				
+				// value from cache
+				NICHT IstLeer( value ); value;
+
+
+
+				
+				/*	read value from config and save in cache
+					----------------------------------------------------------------------
+					----------------------------------------------------------------------
+					----------------------------------------------------------------------
+					----------------------------------------------------------------------
+				*/
+				SetzeVar(
+					[
+/*
+						
+						
+						
+						
+						
+						get( "n1.$current"; 1; "label" ) 
+
+						$n1.current -> n1.default.items.label 
+
+						windows.(window).menus.n1.items.0.label[1] 
+						menus.n1.(default).items.list.label.de
+						
+						
+*/
+						// set menulist
+						menulist = Austauschen( _menu; "."; ¶ );
+						
+						// set menu
+						menu = HoleWert( menulist; 1 );
+						
+						// deprecated values @todo remove
+						menu = Falls(
+							menu = "h1"; "n1";
+							menu
+						);
+							
+
+						
+						// set configpath menus.(menu).(variant)
+						// menus.(menu).(variant)
+						configpath = Falls(
+						
+							// add menu
+							NICHT IstLeer( _menu ); "menus." & menu & "."
+							
+							// add variant @todo get()
+							& FTMenus.get( ""; ""; "variant" )
+						);
+						
+						// submenu(s)
+						// menus.(menu).(variant)
+						// menus.(person).(default).items.(persons)
+						configpath = configpath & Falls( 
+							_menu = "n1.$current";
+							SetzeVar(
+								[
+									item_index = FTMenus.get( "n1"; ""; "isCurrent" );
+									item_name = JSONGetElement( $$FTMenus.config; configpath & ".names[" & item_index & "]");
+									x=1
+								];
+								".items." & item_name
+							)
+						);
+							
+							
+						// item rewrite to name if index
+						item = Falls( 
+
+							// resolve index -> string
+							item_is_index;
+// _Log.insert( ""; ""; ""; "resolve item '" & configpath & ".names[" & _item-1 & "]" & "'" ) &
+							JSONGetElement( $$FTMenus.config; configpath & ".names[" & _item-1 & "]");
+
+
+							// else keep unchanged
+							_item
+						);
+// r = _Log.insert( ""; ""; ""; "item = '" & item & "'" );						
+
+/*
+						& while(
+							[
+								count = ElementeAnzahl( menulist );
+								// windows.(window).n1.
+								cachepath = cachepath1 & "." & menu & ".";
+								i=2
+							];
+							i<=count;
+							[
+								item = HoleWert( menulist; i );
+// 								"items[" & FTMenus.get( menu; ""; "isCurrent" ) & "]"
+								cacheitem = Falls(
+									item = $current;
+									Let(
+										index = FTMenus.get( cachepath; ""; "isCurrent" );
+										name = jsongetelement( $$FTMenus.config; configpath & ".names[" & index-1 & "]");
+										cachepath = cachepath & "items[" & index & "].";
+										configpath = configpath & "items." & name & ".";
+									
+									
+								menu = Liste( menu; item );
+								i=i+1
+							];
+							Austauschen( menu; ¶; "." )
+						)
+*/						
+						
+							
+
+						// add item to configpath
+						// menus.(menu).(variant).
+						configpath = configpath
+						& Falls( 
+							NICHT IstLeer( _item ); 
+							".items." & item 
+						)
+
+					
+
+						// add key, rewrite in certain cases
+						& "." & Falls(
+							// current > default
+							_key = "isCurrent"; "default";
+							
+							// count -> names
+							_key = "count"; "names";
+							
+							_key
+						)
+
+						// add language @todo get() for window
+						& Falls(
+							_key = "label" ODER _key = "info";
+							"." & FTMenus.get( ""; ""; "language" )
+						);
+
+					
+						// set value from config
+						value = Falls(
+							// exit of no config is empty
+							IstLeer( $$FTMenus.config ); "";
+							
+							// get language
+							_key = "language"; FTMenus.get( "--language-get"; ""; "" );							
+							
+							// get variant
+							_key = "variant"; FTMenus.get( "--variant-get"; ""; "" );							
+							
+							// get configpath
+							JSONGetElement( $$FTMenus.config; configpath )
+							
+// & _Log.insert( ""; ""; ""; "get configpath '" & configpath & "'" )
+						);
+
+
+						
+						// handling error and null values
+						value = Falls(
+							// check for error
+// 							ZeichenLinks( value; 1 ) = "?"; 
+// 							"ERROR: invalid config path '" & configpath & "'";
+					
+							// count -> names
+							_key = "count";
+							Falls(
+								NICHT IstLeer( value );
+								ElementeAnzahl( JSONListValues( value; "" ));
+								0
+							);
+							
+							// no value was returned
+							IstLeer( value );
+							Falls(
+								// save 0 as null value in cache
+								_key = "info"; 0;
+								_key = "default"; 0;
+								"ERROR: config has no value for '" & configpath & "'"
+							);
+							
+							// as is
+							value
+						);
+						
+// r = _Log.insert( ""; ""; ""; "value is '" & value & "'" );
+						
+						x=1
+					];
+
+
+					
+					/*	add value to cache
+						------------------------------------------------------------------
+						------------------------------------------------------------------
+						------------------------------------------------------------------
+					*/
+					SetzeVar(
+						[
+							// @fixme default 'persons' -> isCurrent
+							// wird beim target korrekt gesetzt, kann man vielleicht ignorieren
+							value = Falls(
+								_key = "isCurrent"; 0;
+								value
+							);
+							type = Falls(
+								_key = "target"; JSONObject;
+								Exakt( value; value+0 ); JSONNumber;
+								JSONString
+							);
+							$$FTMenus.cache = Falls(
+								NICHT $$FTMenus.get.disable_cache;
+								JSONSetElement( $$FTMenus.cache; cachepath3; value; type )
+							)
+// & _Log.insert( ""; ""; ""; "set cachepath3 '" & cachepath3 & "' with '" & value & "'" )
+						];
+						value
+					)
+				)
+
+
+
+			);
+			
+			/*	set current in cache
+				--------------------------------------------------------------------------
+				windows.(window).menus.(menu).isCurrent = 0
+				
+				@todo unterdrücken bei file, window
+			*/
+			value = Falls(
+				_key = "target";
+				SetzeVar(
+					[
+						// get file, window from target
+						file = JSONGetElement( value; "file" );
+						window = JSONGetElement( value; "window" );
+						
+						// target is remote window or file
+						target_is_remote = NICHT IstLeer( file ) UND file <> Hole( DateiName )
+							ODER NICHT IstLeer( window ) UND window <> Hole( Fenstername );
+							
+						// set cache
+						$$FTMenus.cache = Falls(
+							// if target is different window or file
+							target_is_remote;
+							
+							// keep as is
+							$$FTMenus.cache;
+							
+							// else set in current window
+							JSONSetElement( 
+								$$FTMenus.cache; 
+								cachepath2 & ".isCurrent";
+								_item-1; 
+								Falls( item_is_index; JSONNumber; JSONString )
+							)
+						);
+						// set value, add 
+						value = Falls(
+							target_is_remote;
+							JSONSetElement( value; 
+								["menu"; menu; JSONString ];
+								["item"; _item-1; JSONNumber ]
+							);
+							value
+						)
+					];
+					value
+// & _Log.insert( ""; ""; ""; "set current in cachepath2 '" & cachepath2 & ".isCurrent' with '" & _item-1 & "'" )
+				);
+				value
+			);
+			
+			x=1
+		];
+		Falls(
+			// error
+			ZeichenLinks( value; 5 ) = "ERROR"; value;
+			
+			// isCurrent as is
+			_key = "isCurrent"; value;
+			
+			// null values - empty results are stored as '0'
+			value = 0; "";
+
+/*			
+			set currents in cache (even if cache is disabled!)
+			set currents in globals?
+			return target object, window name
+			@todo resolve restore -> ... -> default
+			
+			person.target > restore > current:list
+			FTMenus.get( "h1"; 1; "target" )
+*/
+			// target
+			Falsch; // _key = "target";
+			Falls(
+/*				current ist schon gesetzt
+					nicht, wenn remote file/window
+				
+				isCurrent = 0 (persons)
+				
+				2. Aufruf mit get( "n1.$current"; 0; "target" )
+				
+				
+*/				
+				// restore view
+				JSONGetElement( value; "view" ) = "restore";
+				"";
+/*				Let([
+					// restore -> target
+					item = FTMenus.get( _menu; item; "itemsCurrent" );
+					target = FTMenus.get( 
+					
+					jsonsetelement(
+					value;
+					"view"; 
+					;
+					jsonstring
+				);
+*/				value
+			);
+			
+			// return value
+			value
+		)
+	)
+)
+
+// console log
+// & _Log.insert( ""; ""; -1; "end get()" )
