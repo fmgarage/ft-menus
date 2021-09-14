@@ -1,8 +1,8 @@
 ---
-title: Under the Hood
+title: Tipps & Tricks
 nav_order: 3
 has_children: true
 ---
 
-## Under the Hood
+## Tipps & Tricks
 

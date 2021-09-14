@@ -1,8 +1,8 @@
 ---
-title: Under the Hood
+title: Troubleshooting
 nav_order: 3
 has_children: true
 ---
 
-## Under the Hood
+## Troubleshooting
 
