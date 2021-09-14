@@ -1,6 +1,6 @@
 ---
 title: Advanced Conepts
-has-children: true
+has_children: true
 nav_order: 2
 ---
 # Advanced Conepts
