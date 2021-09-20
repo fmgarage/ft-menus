@@ -1,6 +1,6 @@
 # https://github.com/pmarsceill/just-the-docs
-#remote_theme: pmarsceill/just-the-docs
-remote_theme: sighingnow/jekyll-gitbook
+remote_theme: pmarsceill/just-the-docs
+
 logo: "/assets/images/just-the-docs.png"
 
 # Aux links for the upper right navigation
