@@ -13,10 +13,46 @@
 			"items": {"$ref": "#/definitions/language"}
 		},
 		"variants": {
+			"title": "Variants",
+			"description": "make individual menus e.g. for admins and users.",
+			"type": "array",
+			"minItems": 1,
+			"items": {
+				"title": "Variant",
+				"type": "string"
+			}
 		},
 		"menus": {
 			"title": "Menus",
-			"additionalProperties": {"$ref": "#/definitions/menu"}
+			"description": "Add a menu name",
+			"type": "object",
+			"additionalProperties": {
+				"$comment": "properties are menus like n1/main, actions, ...",
+				"description": "Add a variant name",
+				"type": "object",
+				"additionalProperties": {
+					"$comment": "properties are variants (admin, user, demo)",
+					"properties": {
+						"names": {
+							"title": "Item Names",
+							"description": "Menu items in display order",
+							"$ref": "#/definitions/itemNames"
+						},
+						"default": {
+							"title": "Default Item",
+							"description": "from defined names",
+							"type": "string"
+						},
+						"items": {
+							"title": "Items",
+							"description": "Add menu items according to defined Item Names",
+							"type": "object",
+							"additionalProperties": {"$ref": "#/definitions/item"}
+						}
+					},
+					"additionalProperties": false
+				}
+			}
 		}
 	},
 	"additionalProperties": false,
@@ -29,11 +65,51 @@
 					"type": "string"
 				},
 				{
-					"title": "Object with defined languaged",
+					"title": "Multiple Languages",
 					"type": "object",
 					"additionalProperties": { "type": "string" }
 				}
 			]
+		},
+		"item": {
+			"type": "object",
+			"properties": {
+				"label": {
+					"title": "Label",
+					"description": "Localizes Labels for the Navigation Buttons",
+					"$ref": "#/definitions/label"
+				},
+				"target": {
+					"title": "Target",
+					"description": "Target for naviation, script, etc.",
+					"$ref": "#/definitions/target"
+				},
+				"names": {
+					"title": "Item Names",
+					"description": "Menu items in display order",
+					"$ref": "#/definitions/itemNames"
+				},
+				"default": {
+					"title": "Default Item",
+					"description": "from defined names",
+					"type": "string"
+				},
+				"items": {
+					"title": "Items",
+					"type": "object",
+					"additionalProperties": {"$ref": "#/defnitions/menu"}
+				}
+			},
+			"additionalProperties": false
+		},
+		"itemNames": {
+			"title": "Item Names",
+			"description": "Menu items in display order",
+			"type": "array",
+			"minItems": 1,
+			"items": {
+				"type": "string"
+			}
 		},
 		"language": {
 			"title": "Language code (e.g. en, de, fr, ...)",
@@ -41,36 +117,18 @@
 			"minLength": 2,
 			"maxLength": 2
 		},
-		"menu": {
-			"type": "object",
-			"properties": {
-				"label": "{$ref": "#/definitions/label",
-				"target": {},
-				"default": {
-					"title": "Default Menu Item"
-				},
-				"names": {
-					"type": "array",
-					"minItems": 1,
-					"items": {
-						"type": "string"
-					}
-				},
-				"items": {"$ref": "#/defnitions/menu"}
-			},
-			"additionalProperties": false
-		},
 		"target": {
 			"title": "Target",
 			"desciption": "Target for naviation, script, etc.",
 			"type": "object",
 			"properties": {
 				"file": {
-					"title": "External File name",
+					"title": "File",
+					"description": "Target is in another file",
 					"type": "string"
 				},
 				"view": {
-					"
+					"title": "View",
 					"type": "string",
 					"default": "restore"
 				},
@@ -78,15 +136,25 @@
 				"window": {
 					"type": "object",
 					"properties": {
-						"type": {
+						"name": {
+							"title": "Window name",
+							"description": "Open in an existing or new window by that name. Use * to include the parent window name. When opening a card window, the string 'card' is added to the parent window name",
 							"type": "string",
-							"enum": ["card"],
+							"default": "*"
+						},
+						"type": {
+							"title": "Type",
+							"type": "string",
+							"enum": ["normal", "card", "modal"],
+							"deafult": "card"
 						},
 						"dim": {
+							"title": "Dim parent window for card"
 							"type": "boolean",
 							"default": true
 						},
 						"position": {
+							"title": "Window or Card position",
 							"type": "object",
 							"properties": {
 								"x": {"$ref": "#/definitions/posXY"},
@@ -97,7 +165,7 @@
 							"additionalProperties": false
 						},
 						"objects": {
-							"title": "Layout Objects",
+							"title": "Activate Layout Objects",
 							"description": "Layout object names in their order of activation",
 							"type": "array",
 							"minItems": 1,
@@ -105,6 +173,15 @@
 								"type": "string"
 							}
 						}
+					}
+				},
+				"objects": {
+					"title": "Layout Objects",
+					"description": "Layout objects in order of activation",
+					"type": "array",
+					"minItems": 1,
+					"items": {
+						"type": "string"
 					}
 				}
 			}
