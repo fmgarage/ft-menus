@@ -182,8 +182,7 @@
 			"minimum": 0
 		},
 		"posWH": {
-			"type": "integer",
-			"minimum": 0
+			"type": "integer"
 		},
 		"additionalProperties": false
 	}
