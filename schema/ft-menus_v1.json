@@ -149,7 +149,7 @@
 							"deafult": "card"
 						},
 						"dim": {
-							"title": "Dim parent window for card"
+							"title": "Dim parent window for card",
 							"type": "boolean",
 							"default": true
 						},
@@ -163,20 +163,11 @@
 								"h": {"$ref": "#/definitions/posWH"}
 							},
 							"additionalProperties": false
-						},
-						"objects": {
-							"title": "Activate Layout Objects",
-							"description": "Layout object names in their order of activation",
-							"type": "array",
-							"minItems": 1,
-							"items": {
-								"type": "string"
-							}
 						}
 					}
 				},
 				"objects": {
-					"title": "Layout Objects",
+					"title": "Activate Layout Objects",
 					"description": "Layout objects in order of activation",
 					"type": "array",
 					"minItems": 1,
