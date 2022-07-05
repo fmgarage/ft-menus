@@ -11,197 +11,151 @@
 			"type": "string"
 		},
 		"variant": {
-			"title": "Current Variant Default",
+			"title": "Global Variant Default",
 			"description": "",
 			"type": "string"
 		},
 		"windows": {
-			"title": "Windows Array",
+			"title": "Windows",
 			"description": "",
-			"type": "array",
+			"type": "object",
 			"additionalProperties": {
 				"$comment": "properties are window names",
-				"description": "",
+				"$ref": "#/$defs/window"
+			}
+		},
+		"paths": {
+			"type": "object",
+			"additionalProperties": {
+				"$comment": "properties are menu names",
 				"type": "object",
-				"properties": {
-					"language": {
-						"Title": "Window Language Default",
-						"type": "string"
-					}
-				},
 				"additionalProperties": {
-					"$comment": "properties are menu names",
-					"properties": {
-						"count": {},
-						"isCurrent": {
-							"type": "integer",
-							"$comment": "not boolean like the name suggests"
-						},
-						"label": {
-							"type": "array",
-							"items": {
-								"type": "string"
-							}
-						},
-						"target": {
-							"type": "array",
-							"items": {
-								"type": "object",
-								"properties": {
-									"layout": {
-										"type": "string"
-									},
-									"window": {
-										"type": "object",
-										"properties": {
-											"adjust": {
-												"type": "string",
-												"enum": ["resize", ""]
-											}
-										}
-									}
-								}
-							}
-						},
-						"item": {
-							"type": "array"
+					"$comment": "properties are variants",
+					"type": "object",
+					"additionalProperties": {
+						"$comment": "properties are paths (e.g. persons-list)",
+						"type": "array",
+						"items": {
+							"type": 
 						}
-					},
-					"additionalProperties": false
+					}
 				}
 			}
 		}
 	},
 	"additionalProperties": false,
-	"definitions": {
-		"label": {
-			"titel": "Label",
-			"oneOf": [
-				{
-					"title": "Single Language",
-					"type": "string"
-				},
-				{
-					"title": "Multiple Languages",
-					"type": "object",
-					"additionalProperties": { "type": "string" }
-				}
-			]
-		},
-		"item": {
+	"$defs": {
+		"window": {
+			"description": "",
 			"type": "object",
 			"properties": {
-				"label": {
-					"title": "Label",
-					"description": "Localizes Labels for the Navigation Buttons",
-					"$ref": "#/definitions/label"
-				},
-				"target": {
-					"title": "Target",
-					"description": "Target for naviation, script, etc.",
-					"$ref": "#/definitions/target"
-				},
-				"names": {
-					"title": "Item Names",
-					"description": "Menu items in display order",
-					"$ref": "#/definitions/itemNames"
-				},
-				"default": {
-					"title": "Default Item",
-					"description": "from defined names",
+				"language": {
+					"title": "Window Language Default",
 					"type": "string"
 				},
-				"items": {
-					"title": "Items",
+				"variant": {
+					"title": "Window Variant Default",
+					"type": "string"
+				},
+				"menus": {
+					"title": "Menus",
 					"type": "object",
-					"additionalProperties": {"$ref": "#/defnitions/menu"}
+					"additionalProperties": {
+						"$comment": "properties are menu names",
+						"$ref": "#/$defs/menu"
+					}
 				}
-			},
-			"additionalProperties": false
-		},
-		"itemNames": {
-			"title": "Item Names",
-			"description": "Menu items in display order",
-			"type": "array",
-			"minItems": 1,
-			"items": {
-				"type": "string"
 			}
 		},
-		"language": {
-			"title": "Language code (e.g. en, de, fr, ...)",
-			"type": "string",
-			"minLength": 2,
-			"maxLength": 2
-		},
-		"target": {
-			"title": "Target",
-			"desciption": "Target for naviation, script, etc.",
-			"type": "object",
+		"menu": {
 			"properties": {
-				"file": {
-					"title": "File",
-					"description": "Target is in another file",
-					"type": "string"
+				"count": {
+					"type": "integer"
 				},
-				"view": {
-					"title": "View",
-					"type": "string",
-					"default": "restore"
+				"isCurrent": {
+					"type": "integer",
+					"$comment": "not boolean like the name suggests"
 				},
-				"layout": {},
-				"window": {
-					"type": "object",
-					"properties": {
-						"name": {
-							"title": "Window name",
-							"description": "Open in an existing or new window by that name. Use * to include the parent window name. When opening a card window, the string 'card' is added to the parent window name",
-							"type": "string",
-							"default": "*"
-						},
-						"type": {
-							"title": "Type",
-							"type": "string",
-							"enum": ["normal", "card", "modal"],
-							"deafult": "card"
-						},
-						"dim": {
-							"title": "Dim parent window for card",
-							"type": "boolean",
-							"default": true
-						},
-						"position": {
-							"title": "Window or Card position",
-							"type": "object",
-							"properties": {
-								"x": {"$ref": "#/definitions/posXY"},
-								"y": {"$ref": "#/definitions/posXY"},
-								"w": {"$ref": "#/definitions/posWH"},
-								"h": {"$ref": "#/definitions/posWH"}
-							},
-							"additionalProperties": false
-						}
-					}
-				},
-				"objects": {
-					"title": "Activate Layout Objects",
-					"description": "Layout objects in order of activation",
+				"label": {
 					"type": "array",
-					"minItems": 1,
 					"items": {
 						"type": "string"
 					}
+				},
+				"target": {
+					"type": "array",
+					"items": {
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"$ref": "#/$defs/target"
+							}
+						]
+					}
+				},
+				"items": {
+					"type": "array",
+					"items": {
+						"oneOf": [
+							{
+								"type": "null"
+							},
+							{
+								"$ref": "#/$defs/menu"
+							}
+						]
+					}
 				}
 			}
 		},
-		"posXY": {
-			"type": "integer",
-			"minimum": 0
-		},
-		"posWH": {
-			"type": "integer"
-		},
-		"additionalProperties": false
+		"target": {
+			"title": "Target Definition",
+			"type": "object",
+			"properties": {
+				"class": {
+					"type": "string"
+				},
+				"file": {
+					"type": "string"
+				},
+				"layout": {
+					"title": "Layout name or id",
+					"type": "string"
+				},
+				"objects": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"script": {
+					"type": "object",
+					"properties": {
+						"name": { "type": "string" },
+						"id": { "type": "string" }
+					}
+				},
+				"view": {
+					"type": "string"
+				},
+				"window": {
+					"type": "object",
+					"properties": {
+						"adjust": {
+							"type": "string",
+							"enum": ["resize", "minimize", "maximize"]
+						},
+						"name": {
+							"title": "Target Window Name",
+							"type": "string"
+						}
+					}
+				}
+			},
+			"additionalProperties": false
+		}
 	}
 }	
 		
