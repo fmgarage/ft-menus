@@ -10,7 +10,7 @@
 			"description": "Available languages, fist one is used as fallback",
 			"type": "array",
 			"minItems": 1,
-			"items": {"$ref": "#/definitions/language"}
+			"items": {"$ref": "#/$defs/language"}
 		},
 		"variants": {
 			"title": "Variants",
@@ -21,6 +21,10 @@
 				"title": "Variant",
 				"type": "string"
 			}
+		},
+		"cacheMode": {
+			"type": "string",
+			"enum": ["single", "window"]
 		},
 		"menus": {
 			"title": "Menus",
@@ -36,7 +40,7 @@
 						"names": {
 							"title": "Item Names",
 							"description": "Menu items in display order",
-							"$ref": "#/definitions/itemNames"
+							"$ref": "#/$defs/itemNames"
 						},
 						"default": {
 							"title": "Default Item",
@@ -47,7 +51,7 @@
 							"title": "Items",
 							"description": "Add menu items according to defined Item Names",
 							"type": "object",
-							"additionalProperties": {"$ref": "#/definitions/item"}
+							"additionalProperties": {"$ref": "#/$defs/item"}
 						}
 					},
 					"additionalProperties": false
@@ -56,7 +60,7 @@
 		}
 	},
 	"additionalProperties": false,
-	"definitions": {
+	"$defs": {
 		"label": {
 			"titel": "Label",
 			"oneOf": [
@@ -77,17 +81,17 @@
 				"label": {
 					"title": "Label",
 					"description": "Localizes Labels for the Navigation Buttons",
-					"$ref": "#/definitions/label"
+					"$ref": "#/$defs/label"
 				},
 				"target": {
 					"title": "Target",
 					"description": "Target for naviation, script, etc.",
-					"$ref": "#/definitions/target"
+					"$ref": "#/$defs/target"
 				},
 				"names": {
 					"title": "Item Names",
 					"description": "Menu items in display order",
-					"$ref": "#/definitions/itemNames"
+					"$ref": "#/$defs/itemNames"
 				},
 				"default": {
 					"title": "Default Item",
@@ -97,7 +101,7 @@
 				"items": {
 					"title": "Items",
 					"type": "object",
-					"additionalProperties": {"$ref": "#/defnitions/menu"}
+					"additionalProperties": { "$ref": "#/$defs/item" }
 				}
 			},
 			"additionalProperties": false
@@ -127,12 +131,81 @@
 					"description": "Target is in another file",
 					"type": "string"
 				},
+				"hideSource": {
+					"description": "hides the source window for external targets",
+					"type": "boolean"
+				},
+				"layout": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"id": {
+							"type": "integer"
+						}
+					},
+					"oneOf": [
+						{
+							"required": ["name"]
+						},
+						{
+							"required": ["id"]
+						}
+					]
+				},
+				"objects": {
+					"title": "Activate Layout Objects",
+					"description": "Layout objects in order of activation",
+					"type": "array",
+					"minItems": 1,
+					"items": {
+						"type": "string"
+					}
+				},
+				"refresh": {
+					"oneOf": [
+						{
+							"title": "Refresh window",
+							"type": "boolean"
+						},
+						{
+							"title": "Refresh layout objects",
+							"desciption": "you can use * as wildcard",
+							"type": "array",
+							"items": {
+								"type": "string",
+								"minItems": 1
+							}
+						}
+					]
+				},
+				"script": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"id": {
+							"type": "integer",
+							"minimum": 1
+						},
+					},
+					"oneOf": [
+						{
+							"required": ["name"]
+						},
+						{
+							"required": ["id"]
+						}
+					],
+					"additionalProperties": false
+				},
 				"view": {
 					"title": "View",
 					"type": "string",
 					"default": "restore"
 				},
-				"layout": {},
 				"window": {
 					"type": "object",
 					"properties": {
@@ -157,25 +230,36 @@
 							"title": "Window or Card position",
 							"type": "object",
 							"properties": {
-								"x": {"$ref": "#/definitions/posXY"},
-								"y": {"$ref": "#/definitions/posXY"},
-								"w": {"$ref": "#/definitions/posWH"},
-								"h": {"$ref": "#/definitions/posWH"}
+								"x": {"$ref": "#/$defs/posXY"},
+								"y": {"$ref": "#/$defs/posXY"},
+								"w": {"$ref": "#/$defs/posWH"},
+								"h": {"$ref": "#/$defs/posWH"}
 							},
 							"additionalProperties": false
+						},
+						"adjust": {
+							"type": "string",
+							"enum": ["minimize", "maximize", "resize"]
 						}
-					}
+					},
+					"additionalProperties": false
 				},
-				"objects": {
-					"title": "Activate Layout Objects",
-					"description": "Layout objects in order of activation",
-					"type": "array",
-					"minItems": 1,
-					"items": {
-						"type": "string"
-					}
+			},
+			"oneOf": [
+				{
+					"required": ["view"]
+				},
+				{
+					"required": ["layout"]
+				},
+				{
+					"required": ["object"]
+				},
+				{
+					"required": ["script"]
 				}
-			}
+			],
+			"additionalProperties": false
 		},
 		"posXY": {
 			"type": "integer",

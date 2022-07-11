@@ -121,7 +121,7 @@
 					"type": "string"
 				},
 				"layout": {
-					"title": "Layout name or id",
+					"title": "Layout name",
 					"type": "string"
 				},
 				"objects": {
@@ -131,11 +131,10 @@
 					}
 				},
 				"script": {
-					"type": "object",
-					"properties": {
-						"name": { "type": "string" },
-						"id": { "type": "string" }
-					}
+					"title": "Script name",
+					"type": "string"
+					},
+					"additionalProperties": false
 				},
 				"view": {
 					"type": "string"
