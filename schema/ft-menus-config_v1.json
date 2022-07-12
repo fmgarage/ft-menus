@@ -127,8 +127,8 @@
 			"type": "object",
 			"properties": {
 				"file": {
-					"title": "File",
-					"description": "Target is in another file",
+					"title": "Filename",
+					"description": "Target is in another file, use the real filename w/o extension here (e.g. 'FT_MenuRemote')",
 					"type": "string"
 				},
 				"hideSource": {

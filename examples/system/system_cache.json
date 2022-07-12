@@ -1,0 +1,165 @@
+{
+	"language" : "de",
+	"variant" : "root",
+	"windows" : 
+	{
+		"f1_system_v62" : 
+		{
+			"language" : "de",
+			"menus" : 
+			{
+				"n1" : 
+				{
+					"count" : 8,
+					"info" : [ 0, "Unit Tests" ],
+					"isCurrent" : 5,
+					"items" : 
+					[
+						{
+							"count" : 3,
+							"isCurrent" : 1,
+							"label" : [ "Global", "Db", "Generic" ],
+							"target" : 
+							[
+								{
+									"layout" : 
+									{
+										"name" : "_Global CF"
+									},
+									"window" : 
+									{
+										"adjust" : "resize"
+									}
+								},
+								{
+									"layout" : 
+									{
+										"name" : "_Db CF Settings"
+									}
+								},
+								{
+									"layout" : 
+									{
+										"name" : "_Generic CF"
+									}
+								}
+							]
+						},
+						{
+							"count" : 2,
+							"isCurrent" : 1,
+							"label" : [ "Liste", "Detail" ],
+							"target" : 
+							[
+								{
+									"layout" : 
+									{
+										"name" : "DTest CT"
+									},
+									"window" : 
+									{
+										"adjust" : "resize"
+									}
+								},
+								{
+									"layout" : 
+									{
+										"name" : "DTest CF"
+									}
+								}
+							]
+						},
+						null,
+						{
+							"count" : 3,
+							"isCurrent" : 2,
+							"label" : [ "Log", "Script", "Thread" ],
+							"target" : 
+							[
+								{
+									"layout" : 
+									{
+										"name" : "SDebugLog T"
+									}
+								},
+								{
+									"layout" : 
+									{
+										"name" : "SDebugScript T"
+									}
+								},
+								{
+									"layout" : 
+									{
+										"name" : "SDebugThread T"
+									}
+								}
+							]
+						},
+						{
+							"count" : 2,
+							"isCurrent" : 0,
+							"label" : [ "Table", "Detail" ],
+							"target" : 
+							[
+								{
+									"layout" : 
+									{
+										"name" : "SIOFile CT"
+									}
+								}
+							]
+						},
+						{
+							"count" : 3,
+							"isCurrent" : 2,
+							"label" : [ "Icon", "Menu", "Debug" ],
+							"target" : 
+							[
+								{
+									"layout" : 
+									{
+										"name" : "SUiIcon AT"
+									}
+								},
+								{
+									"layout" : 
+									{
+										"name" : "SUiMenu CF"
+									}
+								},
+								{
+									"layout" : 
+									{
+										"name" : "SUiMenu CF Debug"
+									}
+								}
+							]
+						}
+					],
+					"label" : [ "local", "DTest", "Core", "Debug", "IOFile", "UI", " ", "Settings" ],
+					"target" : 
+					[
+						{
+							"view" : "restore"
+						},
+						{
+							"view" : "restore"
+						},
+						null,
+						{
+							"view" : "restore"
+						},
+						{
+							"view" : "restore"
+						},
+						{
+							"view" : "restore"
+						}
+					]
+				}
+			},
+			"variant" : "root"
+		}
+	}
+}

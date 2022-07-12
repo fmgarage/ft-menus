@@ -1,0 +1,203 @@
+{
+	"languages": ["de", "en"], 
+	"variants": ["root"],
+	"menus": {
+		"n1": {
+			"root": {
+				"default": "local",
+				"names": ["local", "dtest", "core", "debug", "iofile", "ui", "blank", "settings"],
+				"items": {
+					"local": {
+						"label": {
+							"de": "local"
+						},
+						"target": {
+							"view": "restore"
+						},
+						"names": ["global", "db", "generic"],
+						"items": {
+							"db": {
+								"label": {
+									"de": "Db"
+								},
+								"target": {
+									"layout": { "name": "_Db CF Settings" }
+								}
+							},
+							"generic": {
+								"label": {
+									"de": "Generic"
+								},
+								"target": {
+									"layout": { "name": "_Generic CF" }
+								}
+							},
+							"global": {
+								"label": {
+									"de": "Global"
+								},
+								"target": {
+									"layout": { "name": "_Global CF" },
+									"window": {
+										"adjust": "resize"
+									}
+								}
+							}
+						}
+					},
+					"dtest": {
+						"names": ["list", "detail"],
+						"label": {
+							"de": "DTest"
+						},
+						"info": { "de": "Unit Tests" },
+						"target": {
+							"view": "restore"
+						},
+						"items": {
+							"list": {
+								"label": { "de": "Liste", "en": "List" },
+								"target": {
+									"layout": { "name": "DTest CT" },
+									"window":{"adjust":"resize"}
+								}
+							},
+							"detail": {
+								"label": { "de": "Detail", "en": "Form" },
+								"target": {
+									"layout": { "name": "DTest CF" }
+								}
+							}
+						}
+					},
+					"core": {
+						"label": { "de": "Core" },
+						"target": { "view": "restore" },
+						"names": ["video"],
+						"items": {
+							"video": {
+								"label": { "de": "SCoreVideo" },
+								"target": { "layout": { "name": "SCoreVideo CC capture" } }
+							}
+						}
+					},
+					"debug": {
+						"names": ["log", "script", "thread"],
+						"label": {
+							"de": "Debug"
+						},
+						"target": {
+							"view": "restore"
+						},
+						"items": {
+							"log": {
+								"label": {
+									"de": "Log"
+								},
+								"target": {
+									"layout": { "name": "SDebugLog T" }
+								}
+							},
+							"script": {
+								"label": {
+									"de": "Script"
+								},
+								"target": {
+									"layout": { "name": "SDebugScript T" }
+								}
+							},
+							"thread": {
+								"label": {
+									"de": "Thread"
+								},
+								"target": {
+									"layout": { "name": "SDebugThread T" }
+								}
+							}
+						}
+					},
+					"iofile": {
+						"names": ["table", "form"],
+						"label": {
+							"de": "IOFile"
+						},
+						"target": {
+							"view": "restore"
+						},
+						"items": {
+							"table": {
+								"label": {
+									"de": "Table"
+								},
+								"target": {
+									"layout": { "name": "SIOFile CT" }
+								}
+							},
+							"form": {
+								"label": {
+									"de": "Detail"
+								},
+								"target": {
+									"layout": { "name": "SIOFile CF" }
+								}
+							}
+						}
+					},
+					"ui": {
+						"label": { "de": "UI" },
+						"target": { "view": "restore" },
+						"names": ["icon", "menu", "debug"],
+						"items": {
+							"menu": {
+								"label": { "de": "Menu" },
+								"target": { "layout": { "name": "SUiMenu CF" } }
+							},
+							"icon": {
+								"label": { "de": "Icon" },
+								"target": { "layout": { "name": "SUiIcon AT" } }
+							},
+							"debug": {
+								"label": { "de": "Debug" },
+								"target": { "layout": { "name": "SUiMenu CF Debug" } }
+							}
+						}
+					},
+					"blank": {
+						"label": {"de":" "}
+					},
+					"settings": {
+						"label": {"de":"Settings"},
+						"target": {
+							"layout": { "name": "SUiMenu CC MenuConfig" },
+							"window": { 
+								"type": "card",
+								"dim": true,
+								"position": { "x": 100, "y": 120, "w": -200, "h": -140 }
+							},
+							"objects": ["config"]
+						}
+
+					}
+				}
+			}
+		},
+		"settings": {
+			"root": {
+				"names": ["menu"],
+				"items": {
+					"menu": {
+						"target": {
+							"layout": { "name": "SUiMenu CC MenuConfig" },
+							"window": { 
+								"type": "card",
+								"dim": true,
+								"position": { "x": 100, "y": 120, "w": -200, "h": -140 }
+							},
+							"objects": ["config"]
+						}
+					}
+				}
+			}
+		}
+	}
+}
