@@ -7,19 +7,22 @@
 	"properties": {
 		"languages": {
 			"title": "Languages",
-			"description": "Available languages, fist one is used as fallback",
+			"description": "Available languages, fist one is used as fallback. All languages must be declared here, individual labels or infos do not need to implement all languages.",
 			"type": "array",
 			"minItems": 1,
 			"items": {"$ref": "#/$defs/language"}
 		},
 		"variants": {
+			"$comment": "@todo posix pattern for item",
 			"title": "Variants",
-			"description": "make individual menus e.g. for admins and users.",
+			"description":"define individual menus e.g. for admins and users. All variants must be declared here, individual menus do not need to implement all variants.",
 			"type": "array",
 			"minItems": 1,
 			"items": {
 				"title": "Variant",
-				"type": "string"
+				"type": "string",
+				"minLength": 1,
+				"pattern": "^[a-zA-Z0-9_-]+$"
 			}
 		},
 		"cacheMode": {
@@ -28,12 +31,20 @@
 		},
 		"menus": {
 			"title": "Menus",
-			"description": "Add a menu name",
+			"description": "Add a menu name, allowed are lower case, upper case, numbers, '_', must not start with a number",
 			"type": "object",
+			"propertyNames": {
+				"pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+			},
+			"minProperties": 1,
 			"additionalProperties": {
-				"$comment": "properties are menus like n1/main, actions, ...",
-				"description": "Add a variant name",
+				"$comment": "menu – properties are menus like n1/main, actions, ...",
+				"description": "Add a variant name, allowed are lower case, upper case, numbers, '_', must not start with a number",
 				"type": "object",
+				"propertyNames": {
+					"pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+				},
+				"minProperties": 1,
 				"additionalProperties": {
 					"$comment": "properties are variants (admin, user, demo)",
 					"properties": {
@@ -51,18 +62,24 @@
 							"title": "Items",
 							"description": "Add menu items according to defined Item Names",
 							"type": "object",
-							"additionalProperties": {"$ref": "#/$defs/item"}
+							"minProperties": 1,
+							"propertyNames": {
+								"pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+							},
+							"additionalProperties": { "$ref": "#/$defs/item" }
 						}
 					},
+					"required": ["names", "items"],
 					"additionalProperties": false
 				}
 			}
 		}
 	},
+	"required": ["languages", "variants", "menus" ],
 	"additionalProperties": false,
 	"$defs": {
-		"label": {
-			"titel": "Label",
+		"label_xx": {
+			"title": "Label",
 			"oneOf": [
 				{
 					"title": "Single Language",
@@ -71,12 +88,21 @@
 				{
 					"title": "Multiple Languages",
 					"type": "object",
+					"minProperties": 1,
 					"additionalProperties": { "type": "string" }
 				}
 			]
 		},
+		"label": {
+			"title": "Label",
+			"type": "object",
+			"additionalProperties": {
+				"type": "string"
+			}
+		},
 		"item": {
 			"type": "object",
+			"description": "Menu Item",
 			"properties": {
 				"label": {
 					"title": "Label",
@@ -112,14 +138,16 @@
 			"type": "array",
 			"minItems": 1,
 			"items": {
-				"type": "string"
+				"type": "string",
+				"pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
 			}
 		},
 		"language": {
-			"title": "Language code (e.g. en, de, fr, ...)",
+			"title": "Language code (e.g. en, de, fr, ... )",
 			"type": "string",
 			"minLength": 2,
-			"maxLength": 2
+			"maxLength": 2,
+			"pattern": "^[a-z]+$"
 		},
 		"target": {
 			"title": "Target",
@@ -189,7 +217,7 @@
 						"id": {
 							"type": "integer",
 							"minimum": 1
-						},
+						}
 					},
 					"oneOf": [
 						{
@@ -243,7 +271,7 @@
 						}
 					},
 					"additionalProperties": false
-				},
+				}
 			},
 			"oneOf": [
 				{
