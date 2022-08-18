@@ -1,6 +1,6 @@
 # ft-menus
 
-Powerful micro framework for implementing navigation and all kind of menus into your existing FileMaker app.
+Powerful micro framework for implementing navigation and all kinds of menus into your existing FileMaker app.
 
 ## What does 'FT' stand for?
 
