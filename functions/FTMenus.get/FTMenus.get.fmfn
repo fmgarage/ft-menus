@@ -41,6 +41,8 @@ Falls(
 			----------------------------------------------------------------
 			@param string _item as language = ""
 			@return string language
+
+			@todo return "none" if no languages are defined
 		*/
 		_menu = "--language-get";
 		SetzeVar(
@@ -110,7 +112,8 @@ Falls(
 				
 			// return language
 			& language
-// & _Log.insert( ""; ""; ""; "return '" & language & "'" )
+
+			// & _Log.insert( ""; ""; ""; "return '" & language & "'" )
 		);
 		
 		
@@ -172,7 +175,7 @@ Falls(
 					SCoreJson.findKey( json_to_scan; "label"; "" );
 					SCoreJson.findKey( json_to_scan; "info"; "" )
 				);
-// $$modes_to_delete=modes_to_delete;				
+				// $$modes_to_delete=modes_to_delete;
 				
 				x=1
 			];
@@ -276,7 +279,8 @@ Falls(
 				
 			// return variant
 			& variant
-// & _Log.insert( ""; ""; ""; "return '" & variant & "'" )
+			
+			// & _Log.insert( ""; ""; ""; "return '" & variant & "'" )
 		);
 		
 		

@@ -9,7 +9,6 @@
 			"title": "Languages",
 			"description": "Available languages, fist one is used as fallback. All languages must be declared here, individual labels or infos do not need to implement all languages.",
 			"type": "array",
-			"minItems": 1,
 			"items": {"$ref": "#/$defs/language"}
 		},
 		"variants": {
@@ -17,7 +16,6 @@
 			"title": "Variants",
 			"description":"define individual menus e.g. for admins and users. All variants must be declared here, individual menus do not need to implement all variants.",
 			"type": "array",
-			"minItems": 1,
 			"items": {
 				"title": "Variant",
 				"type": "string",
@@ -75,7 +73,7 @@
 			}
 		}
 	},
-	"required": ["languages", "variants", "menus" ],
+	"required": ["variants", "menus"],
 	"additionalProperties": false,
 	"$defs": {
 		"label_xx": {
